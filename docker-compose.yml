@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  xingsuanai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xingsuanai
+    restart: unless-stopped
+
+    # host 网络：容器可直接访问 localhost:7799 (wechat-article-exporter)
+    network_mode: host
+
+    volumes:
+      # 素材库数据目录
+      - /vol1/1000/素材库:/data/素材库
+      # wechat-article CLI（只读挂载）
+      - /home/ztb/wechat-skill:/opt/wechat-skill:ro
+      - /home/ztb/.venv:/opt/wechat-venv:ro
+
+    environment:
+      # 数据目录
+      XINGSUANAI_DATA_DIR: /data/素材库/星算运营库
+
+      # wechat CLI 路径（对应上面的 volume 挂载）
+      WECHAT_SCRIPT_PATH: /opt/wechat-skill/wechat_article.py
+      WECHAT_VENV_PY:     /opt/wechat-venv/bin/python3
+
+      # wechat-article-exporter 连接（host 网络模式下 localhost 可达）
+      WECHAT_ARTICLE_BASE_URL:   http://localhost:7799
+      WECHAT_ARTICLE_AUTH_KEY:   ${WECHAT_ARTICLE_AUTH_KEY}
+      WECHAT_ARTICLE_PROXY_URLS: ${WECHAT_ARTICLE_PROXY_URLS}
+      WECHAT_ARTICLE_PROXY_AUTH: ${WECHAT_ARTICLE_PROXY_AUTH}
+
+      TZ: Asia/Shanghai
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
