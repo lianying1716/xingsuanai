@@ -17,6 +17,8 @@ services:
       # wechat-article CLI（只读挂载）
       - /home/ztb/wechat-skill:/opt/wechat-skill:ro
       - /home/ztb/.venv:/opt/wechat-venv:ro
+      # 源代码热挂载 — 代码改动只需重启容器，无需重新 build
+      - /vol1/1000/素材库/星算运营库/xingsuanai/xingsuanai:/app/xingsuanai:ro
 
     environment:
       # 数据目录
@@ -31,6 +33,11 @@ services:
       WECHAT_ARTICLE_AUTH_KEY:   ${WECHAT_ARTICLE_AUTH_KEY}
       WECHAT_ARTICLE_PROXY_URLS: ${WECHAT_ARTICLE_PROXY_URLS}
       WECHAT_ARTICLE_PROXY_AUTH: ${WECHAT_ARTICLE_PROXY_AUTH}
+
+      # 抖小云 (Douyin 视频下载管理, port 10101)
+      DYSYNC_URL:      ${DYSYNC_URL}
+      DYSYNC_USERNAME: ${DYSYNC_USERNAME}
+      DYSYNC_PASSWORD: ${DYSYNC_PASSWORD}
 
       TZ: Asia/Shanghai
 
