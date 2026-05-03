@@ -69,3 +69,31 @@ def search_accounts(keyword: str) -> list[dict]:
     if result:
         return result.get('accounts', result.get('list', []))
     return []
+
+
+def discover_accounts(keyword: str, size: int = 10, begin: int = 0) -> list[dict]:
+    """通过 wechat-article-exporter /api/web/mp/searchbiz 搜索公众号。
+    直接调 HTTP，无需经过 CLI 脚本。
+    """
+    import urllib.request
+    env = get_wechat_env()
+    base_url = env.get('WECHAT_ARTICLE_BASE_URL', 'http://localhost:7799')
+    auth_key = env.get('WECHAT_ARTICLE_AUTH_KEY', '')
+
+    url = (
+        f'{base_url}/api/web/mp/searchbiz'
+        f'?keyword={urllib.request.quote(keyword)}'
+        f'&size={size}&begin={begin}'
+    )
+    req = urllib.request.Request(url, headers={'X-Auth-Key': auth_key})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+        base = data.get('base_resp', {})
+        if base.get('ret') != 0:
+            logger.warning('searchbiz error: %s', base.get('err_msg'))
+            return []
+        return data.get('list', [])
+    except Exception as e:
+        logger.error('discover_accounts failed: %s', e)
+        return []
