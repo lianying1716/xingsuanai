@@ -63,6 +63,7 @@ OP_BASE = CFG.get("OPERATOR_BASE_URL", "https://xsai5.xyz").rstrip("/")
 OP_TOKEN = CFG.get("OPERATOR_TOKEN", "")
 
 LICENSE_WHITELIST = {"MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "0BSD", "Unlicense"}
+SKILL_MAX = 8  # 一个仓超过这么多 skill 视为"技能合集仓"，不逐个入插件，改做引流内容卡
 SKILL_TOPICS = {"claude-code", "claude-skill", "claude-skills", "agent-skill",
                 "claude-code-plugin", "mcp", "mcp-server", "cursor-rules", "codex"}
 # 发现：既挖 skill 类也挖普通热门/冷门项目(面向我们受众)
@@ -434,6 +435,10 @@ def route_repo(owner_repo, cand=None, apply=False, publish=False, visible=False,
     #   skill 类(有 SKILL.md)        → 出口①插件中心(license 合规才收；不合规则跳过，不混进项目热门)
     #   普通项目(无 SKILL.md)         → 出口②内容中心 GitHub 热门(大白话引流卡)
     if skills:
+        if len(skills) > SKILL_MAX:
+            print(f"  ⓘ 含 {len(skills)} 个 skill(技能合集仓) → 不逐个入插件，改做引流内容卡")
+            save_card(owner, repo, meta, cand or {}, apply, visible, no_ai)
+            return "card-collection"
         if license_ok(spdx) or allow_any:
             warn = "" if license_ok(spdx) else (spdx or "NO-LICENSE")
             if warn:
@@ -462,6 +467,7 @@ def main():
     ap.add_argument("--no-ai", action="store_true")
     ap.add_argument("--allow-any-license", action="store_true")
     ap.add_argument("--refresh", action="store_true", help="只刷新现有内容卡的近期涨星(不发现/不加工)")
+    ap.add_argument("--add-list", dest="add_list", metavar="FILE", help="批量处理一个 owner/repo 清单文件(每行一个)")
     ap.add_argument("--limit", type=int, default=10)
     args = ap.parse_args()
 
@@ -473,6 +479,38 @@ def main():
 
     if args.refresh:
         refresh_cards()
+        return
+
+    if args.add_list:
+        lines = Path(args.add_list).read_text(encoding="utf-8").splitlines()
+        repos = []
+        for ln in lines:
+            ln = ln.strip()
+            if ln and not ln.startswith("#") and "/" in ln:
+                repos.append(ln.split()[0])
+        repos = list(dict.fromkeys(repos))
+        print(f"[add-list] {len(repos)} 个仓待处理")
+        state = load_state()
+        processed = state.setdefault("processed", {})
+        new = 0
+        for r in repos:
+            if r in processed:
+                print(f"  ⏭️ {r} 已处理过，跳过")
+                continue
+            try:
+                outcome = route_repo(r, apply=args.apply, publish=args.publish,
+                                     visible=args.visible, no_ai=args.no_ai, allow_any=args.allow_any_license)
+                if args.apply:
+                    processed[r] = {"at": NOW.isoformat(), "outcome": outcome}
+                    save_state(state)
+                    new += 1
+            except Exception as e:
+                print(f"  [出错跳过] {r}: {e}", file=sys.stderr)
+            time.sleep(0.5)
+        if args.apply:
+            print(f"\n新处理 {new} 个")
+            print("=== 刷新涨星 ===")
+            refresh_cards()
         return
 
     if args.add:

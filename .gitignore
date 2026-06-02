@@ -11,3 +11,6 @@ build/
 # GitHub 来源模块运行时状态(不提交)
 .github_state.json
 ._*
+
+# 运行时候选清单(数据,不提交)
+candidates_*.txt
