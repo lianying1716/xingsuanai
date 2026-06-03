@@ -111,6 +111,9 @@ def _req(url, headers=None, data=None, method=None, timeout=60):
             return resp.status, resp.read().decode()
     except urllib.error.HTTPError as e:
         return e.code, e.read().decode()
+    except Exception as e:
+        # 读超时 / 连接错误等 → 返回非 200,让上层重试或跳过,绝不让异常冒泡杀进程
+        return 0, f"REQERR {type(e).__name__}: {e}"
 
 
 def gh(url):
