@@ -255,13 +255,14 @@ def fetch_contributors(owner, repo):
         return 0
 
 
-def find_skill_md(owner, repo, branch):
+def find_skill_md(owner, repo, branch, include_dot=False):
     tree = gh(f"https://api.github.com/repos/{owner}/{repo}/git/trees/{branch}?recursive=1")
     blobs = [e["path"] for e in tree.get("tree", []) if e.get("type") == "blob"]
     skill_mds = [p for p in blobs if p == "SKILL.md" or p.endswith("/SKILL.md")]
     # 忽略 dot 目录(.agents/.claude/.cursor/.codex/.github 等)下的 SKILL.md：
     # 那是项目「自己开发用」的 AI 配置，不是给终端用户安装的产品级 skill。
-    skill_mds = [p for p in skill_mds if not any(seg.startswith(".") for seg in p.split("/")[:-1])]
+    if not include_dot:
+        skill_mds = [p for p in skill_mds if not any(seg.startswith(".") for seg in p.split("/")[:-1])]
     dirs = [("" if p == "SKILL.md" else p[:-len("/SKILL.md")]) for p in skill_mds]
     out = []
     for d in dirs:
@@ -420,13 +421,13 @@ def refresh_cards():
 
 
 # ── 路由：一仓自动分流 ────────────────────────────────────────────────
-def route_repo(owner_repo, cand=None, apply=False, publish=False, visible=False, no_ai=False, allow_any=False):
+def route_repo(owner_repo, cand=None, apply=False, publish=False, visible=False, no_ai=False, allow_any=False, max_skills=SKILL_MAX, include_dot=False):
     owner, repo = owner_repo.split("/", 1)
     meta = fetch_meta(owner, repo)
     spdx = meta["license"]
     print(f"\n=== {owner_repo}  ⭐{meta['stars']}  license={spdx}  lang={meta.get('language')} ===")
     try:
-        skills = find_skill_md(owner, repo, meta["branch"])
+        skills = find_skill_md(owner, repo, meta["branch"], include_dot=include_dot)
     except Exception as e:
         skills = []
         print(f"  (文件树读取失败: {e})")
@@ -435,10 +436,12 @@ def route_repo(owner_repo, cand=None, apply=False, publish=False, visible=False,
     #   skill 类(有 SKILL.md)        → 出口①插件中心(license 合规才收；不合规则跳过，不混进项目热门)
     #   普通项目(无 SKILL.md)         → 出口②内容中心 GitHub 热门(大白话引流卡)
     if skills:
-        if len(skills) > SKILL_MAX:
-            print(f"  ⓘ 含 {len(skills)} 个 skill(技能合集仓) → 不逐个入插件，改做引流内容卡")
+        if len(skills) > max_skills:
+            print(f"  ⓘ 含 {len(skills)} 个 skill(超过上限 {max_skills}，技能合集仓) → 改做引流内容卡")
             save_card(owner, repo, meta, cand or {}, apply, visible, no_ai)
             return "card-collection"
+        if len(skills) > SKILL_MAX:
+            print(f"  ⚠️ 含 {len(skills)} 个 skill(>{SKILL_MAX})，--max-skills={max_skills} 放行，逐个入插件")
         if license_ok(spdx) or allow_any:
             warn = "" if license_ok(spdx) else (spdx or "NO-LICENSE")
             if warn:
@@ -468,6 +471,8 @@ def main():
     ap.add_argument("--allow-any-license", action="store_true")
     ap.add_argument("--refresh", action="store_true", help="只刷新现有内容卡的近期涨星(不发现/不加工)")
     ap.add_argument("--add-list", dest="add_list", metavar="FILE", help="批量处理一个 owner/repo 清单文件(每行一个)")
+    ap.add_argument("--include-dot-skills", dest="include_dot", action="store_true", help="收 .claude/.codex 等 dot 目录下的 SKILL.md(用于正经技能包)")
+    ap.add_argument("--max-skills", dest="max_skills", type=int, default=SKILL_MAX, help=f"单仓技能数超过此值才当合集做内容卡(默认{SKILL_MAX}；调高可把策展合集的技能逐个收进插件中心)")
     ap.add_argument("--limit", type=int, default=10)
     args = ap.parse_args()
 
@@ -499,7 +504,7 @@ def main():
                 continue
             try:
                 outcome = route_repo(r, apply=args.apply, publish=args.publish,
-                                     visible=args.visible, no_ai=args.no_ai, allow_any=args.allow_any_license)
+                                     visible=args.visible, no_ai=args.no_ai, allow_any=args.allow_any_license, max_skills=args.max_skills, include_dot=args.include_dot)
                 if args.apply:
                     processed[r] = {"at": NOW.isoformat(), "outcome": outcome}
                     save_state(state)
@@ -515,7 +520,7 @@ def main():
 
     if args.add:
         route_repo(args.add, apply=args.apply, publish=args.publish,
-                   visible=args.visible, no_ai=args.no_ai, allow_any=args.allow_any_license)
+                   visible=args.visible, no_ai=args.no_ai, allow_any=args.allow_any_license, max_skills=args.max_skills, include_dot=args.include_dot)
         return
 
     if args.discover:
