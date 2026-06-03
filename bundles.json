@@ -1,0 +1,412 @@
+{
+  "bundles": [
+    {
+      "bundle_id": "ecom-product-page",
+      "group": "电商从业/创业",
+      "pain": "详情页不会写",
+      "title": "详情页不会写？一套直接搭好",
+      "summary": "帮你把商品卖点、文案、配图和排版一起理顺，快速做出能看懂、能下单的商品详情页。",
+      "icon": "🛒",
+      "plugin_ids": [
+        "skill-aaron-he-zhu-seo-geo-claude-skills-seo-content-writer",
+        "clawhub-humanizer",
+        "skill-wuyoscar-gpt-image2-skill-gpt-image",
+        "skill-nextlevelbuilder-ui-ux-pro-max-skill-design"
+      ],
+      "sort": 0,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "ecom-store-data",
+      "group": "电商从业/创业",
+      "pain": "店铺数据看不懂",
+      "title": "店铺数据看不懂？先这样分析",
+      "summary": "把销量、转化、竞品和搜索情况一起梳理清楚，让你知道该推什么、改什么、停什么。",
+      "icon": "📊",
+      "plugin_ids": [
+        "clawhub-stock-analysis",
+        "skill-aaron-he-zhu-seo-geo-claude-skills-competitor-analysis",
+        "skill-blacktwist-social-media-skills-performance-analyzer-sms",
+        "clawhub-excel-xlsx"
+      ],
+      "sort": 1,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "content-pk-start",
+      "group": "自媒体/内容创业",
+      "pain": "不会持续发文",
+      "title": "不会持续发文？一套搞定选题写作排期",
+      "summary": "帮你从找选题、写文案到排好发布时间，一次把公众号、小红书、短内容的日更难题解决掉。",
+      "icon": "🗓️",
+      "plugin_ids": [
+        "skill-blacktwist-social-media-skills-content-strategy-sms",
+        "skill-blacktwist-social-media-skills-content-calendar-sms",
+        "skill-blacktwist-social-media-skills-post-writer-sms",
+        "skill-blacktwist-social-media-skills-hook-writer-sms"
+      ],
+      "sort": 2,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "content-traffic-boost",
+      "group": "自媒体/内容创业",
+      "pain": "发了没人看",
+      "title": "发了没人看？这包专治没流量",
+      "summary": "帮你把文章和帖子改得更像真人、更抓眼球，还能顺手做SEO/GEO优化，让内容更容易被搜到、被推荐。",
+      "icon": "🚀",
+      "plugin_ids": [
+        "skill-conorbronsdon-avoid-ai-writing-avoid-ai-writing",
+        "clawhub-humanizer",
+        "skill-aaron-he-zhu-seo-geo-claude-skills-seo-content-writer",
+        "skill-aaron-he-zhu-seo-geo-claude-skills-keyword-research"
+      ],
+      "sort": 3,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "solo-client-delivery",
+      "group": "自由职业/独立创业",
+      "pain": "总在赶交付",
+      "title": "总在赶交付？这样搭",
+      "summary": "帮你把客户需求、资料整理、方案初稿和发出去的文档一口气串起来，少熬夜、少返工。",
+      "icon": "🚀",
+      "plugin_ids": [
+        "skill-rohitg00-skillkit-task-decomposition",
+        "clawhub-notion",
+        "clawhub-word-docx",
+        "skill-thinkinaixyz-deepchat-pptx"
+      ],
+      "sort": 4,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "one-person-marketing",
+      "group": "自由职业/独立创业",
+      "pain": "没时间做推广",
+      "title": "没时间做推广？这样搭",
+      "summary": "帮你自动找选题、写内容、做图，再顺手把社媒发文和日常推广内容一起搞定。",
+      "icon": "📣",
+      "plugin_ids": [
+        "skill-onvoyage-ai-gtm-engineer-skills-research-keywords",
+        "skill-blacktwist-social-media-skills-post-writer-sms",
+        "skill-wuyoscar-gpt-image2-skill-gpt-image",
+        "skill-blacktwist-social-media-skills-content-calendar-sms"
+      ],
+      "sort": 5,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "dev-code-review-fix",
+      "group": "程序员/开发者",
+      "pain": "代码改完不放心",
+      "title": "代码改完不放心？先审再发",
+      "summary": "帮你先看代码有没有坑、哪里写得别扭、改动会不会把别的地方搞坏，适合 Claude Code / Cursor 日常改完就想快速过一遍的人。",
+      "icon": "🔍",
+      "plugin_ids": [
+        "skill-thinkinaixyz-deepchat-code-review",
+        "skill-zeroclaw-labs-zeroclaw-github-pr-review-session",
+        "skill-rohitg00-skillkit-structured-review",
+        "skill-waybarrios-opencode-power-pack-security-review"
+      ],
+      "sort": 6,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "dev-mcp-toolkit",
+      "group": "程序员/开发者",
+      "pain": "想接MCP但懵",
+      "title": "想接MCP但懵？一套搭起来",
+      "summary": "从搭 MCP、连工具、到调通智能体开发流程，帮你把零散步骤串起来，不用一边翻文档一边瞎试。",
+      "icon": "🧩",
+      "plugin_ids": [
+        "skill-anthropics-skills-mcp-builder",
+        "skill-thinkinaixyz-deepchat-mcp-builder",
+        "clawhub-mcporter",
+        "skill-google-agents-cli-google-agents-cli-scaffold"
+      ],
+      "sort": 7,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "vibe-build-and-debug",
+      "group": "Vibe Coding",
+      "pain": "做完总报错",
+      "title": "做完总报错？先搭好这套",
+      "summary": "适合你用一句话做网站或App后，模型写完总是跑不起来、看不懂、改不动。先用这包把代码写出来、查问题、调浏览器里的效果，一步步修到能用。",
+      "icon": "🛠️",
+      "plugin_ids": [
+        "skill-datawhalechina-easy-vibe",
+        "skill-waybarrios-opencode-power-pack-code-explorer",
+        "skill-chromedevtools-chrome-devtools-mcp-troubleshooting",
+        "skill-waybarrios-opencode-power-pack-feature-dev"
+      ],
+      "sort": 8,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "vibe-to-agent",
+      "group": "Vibe Coding",
+      "pain": "想做成智能体",
+      "title": "想把想法变智能体？这包直接开工",
+      "summary": "适合你想把自然语言需求做成能自己干活的 agent，但不知道先搭什么、怎么连工具、怎么上线。用这包从搭脚手架到接入能力，再到部署发布，一次配齐。",
+      "icon": "🤖",
+      "plugin_ids": [
+        "skill-google-agents-cli-google-agents-cli-scaffold",
+        "skill-google-agents-cli-google-agents-cli-adk-code",
+        "skill-google-agents-cli-google-agents-cli-deploy",
+        "skill-google-agents-cli-google-agents-cli-eval"
+      ],
+      "sort": 9,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "enterprise-agent-rag",
+      "group": "企业智能化",
+      "pain": "知识找不到",
+      "title": "知识找不到？让它自己会搜会答",
+      "summary": "适合做内部智能客服、知识库问答和企业 Agent：先把资料整理清楚，再让模型会找、会读、会答，少翻文档少问人。",
+      "icon": "🧠",
+      "plugin_ids": [
+        "skill-docsagent-docsagent-docsagent",
+        "skill-docling-project-docling-docling-document-intelligence",
+        "skill-anysearch-ai-anysearch-skill-anysearch-skill",
+        "skill-pleaseprompto-notebooklm-skill-notebooklm-skill"
+      ],
+      "sort": 10,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "enterprise-automation-cs",
+      "group": "企业智能化",
+      "pain": "流程太手动",
+      "title": "流程太手动？让系统自己跑起来",
+      "summary": "适合做流程自动化、工单分流、日报周报和客服协同：把任务拆开、串起来，再用工作流和邮件/IM工具自动执行，少人工来回搬运。",
+      "icon": "⚙️",
+      "plugin_ids": [
+        "clawhub-automation-workflows",
+        "skill-rohitg00-skillkit-task-decomposition",
+        "clawhub-imap-smtp-email",
+        "clawhub-slack"
+      ],
+      "sort": 11,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "brand-fast-track",
+      "group": "设计/创意",
+      "pain": "品牌图太慢",
+      "title": "品牌图太慢？这包直接提速",
+      "summary": "从做品牌参考、定风格，到快速出图和封面，一套帮你把品牌视觉先做出来，少反复改。",
+      "icon": "🎨",
+      "plugin_ids": [
+        "skill-leonxlnx-taste-skill-brandkit",
+        "skill-nextlevelbuilder-ui-ux-pro-max-skill-brand",
+        "skill-openai-codex-imagegen",
+        "skill-krillinai-krillinai-krillinai-cover"
+      ],
+      "sort": 12,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "ui-ux-to-deliver",
+      "group": "设计/创意",
+      "pain": "改稿改到烦",
+      "title": "改稿改到烦？先把设计做对",
+      "summary": "先把界面、设计系统和风格统一好，再去美化细节，减少来回推翻重做。",
+      "icon": "🧩",
+      "plugin_ids": [
+        "skill-nextlevelbuilder-ui-ux-pro-max-skill-ui-ux-pro-max",
+        "skill-nextlevelbuilder-ui-ux-pro-max-skill-design-system",
+        "skill-nextlevelbuilder-ui-ux-pro-max-skill-ui-styling",
+        "skill-leonxlnx-taste-skill-minimalist-skill"
+      ],
+      "sort": 13,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "student-paper-search-notes",
+      "group": "学生/学术科研",
+      "pain": "找文献太费劲",
+      "title": "找文献太费劲？这包直接帮你搜、读、记",
+      "summary": "适合写论文、做综述的人：先把文献搜出来，再整理进笔记，最后把内容提炼成能直接用的材料。",
+      "icon": "📚",
+      "plugin_ids": [
+        "skill-shzhao27208-aut-sci-write-sci-search",
+        "skill-shzhao27208-aut-sci-write-sci-zotero",
+        "skill-joeseesun-qiaomu-anything-to-notebooklm-qiaomu-anything-to",
+        "clawhub-notion"
+      ],
+      "sort": 14,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "student-paper-ppt-output",
+      "group": "学生/学术科研",
+      "pain": "论文转PPT难",
+      "title": "论文转PPT难？这包帮你一键变成能上台的稿子",
+      "summary": "适合赶汇报、答辩的人：把论文内容整理、提炼，再直接做成PPT和展示页，少熬夜很多。",
+      "icon": "🎓",
+      "plugin_ids": [
+        "skill-imbad0202-academic-research-skills-academic-paper",
+        "skill-shzhao27208-aut-sci-write-sci-review",
+        "skill-shzhao27208-aut-sci-write-sci-ppt",
+        "skill-nextlevelbuilder-ui-ux-pro-max-skill-slides"
+      ],
+      "sort": 15,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "seo-geo-growth-starter",
+      "group": "运营/增长/市场",
+      "pain": "写了没曝光",
+      "title": "写了没曝光？这包先救流量",
+      "summary": "专治内容发了没人看、搜不到、排不上：先找关键词和缺口，再写出能被搜到的内容，还能顺手做SEO检查和持续预警。",
+      "icon": "📈",
+      "plugin_ids": [
+        "skill-aaron-he-zhu-seo-geo-claude-skills-keyword-research",
+        "skill-aaron-he-zhu-seo-geo-claude-skills-seo-content-writer",
+        "skill-aaron-he-zhu-seo-geo-claude-skills-on-page-seo-auditor",
+        "skill-aaron-he-zhu-seo-geo-claude-skills-alert-manager"
+      ],
+      "sort": 16,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "social-content-schedule-kit",
+      "group": "运营/增长/市场",
+      "pain": "社媒更不动",
+      "title": "社媒更不动？这包帮你批量发",
+      "summary": "适合要做小红书/微博/LinkedIn这类社媒运营的人：先定内容策略，再改写成不同平台口吻，最后排进日历里持续发。",
+      "icon": "📅",
+      "plugin_ids": [
+        "skill-blacktwist-social-media-skills-content-strategy-sms",
+        "skill-blacktwist-social-media-skills-content-repurposer-sms",
+        "skill-blacktwist-social-media-skills-content-calendar-sms",
+        "skill-blacktwist-social-media-skills-post-writer-sms"
+      ],
+      "sort": 17,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "store-ops-lite",
+      "group": "个体户/小微企业主",
+      "pain": "忙不过来",
+      "title": "忙不过来？先把这些活交给AI",
+      "summary": "适合小店和个体户：帮你写文案、回客服、做海报、发货后还能把账表整理好，少请人也能先扛住。",
+      "icon": "🧾",
+      "plugin_ids": [
+        "skill-blacktwist-social-media-skills-post-writer-sms",
+        "clawhub-humanizer",
+        "skill-anthropics-skills-canvas-design",
+        "clawhub-excel-xlsx"
+      ],
+      "sort": 18,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "customer-sales-pack",
+      "group": "个体户/小微企业主",
+      "pain": "没单子",
+      "title": "没单子？先把宣传和获客补上",
+      "summary": "适合还在拉客的新店：AI帮你找卖点、写推广内容、做海报和配文，让你更快发朋友圈、短视频和社媒。",
+      "icon": "📣",
+      "plugin_ids": [
+        "skill-aaron-he-zhu-seo-geo-claude-skills-keyword-research",
+        "skill-onvoyage-ai-gtm-engineer-skills-write-seo-geo-content",
+        "skill-blacktwist-social-media-skills-carousel-writer-sms",
+        "skill-anthropics-skills-canvas-design"
+      ],
+      "sort": 19,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "cross-border-localization",
+      "group": "外贸/跨境",
+      "pain": "英文不地道",
+      "title": "英文不地道？这包帮你改到像本地人",
+      "summary": "把中文内容翻成更自然的外语，还能顺手做润色、改写和本地化检查，适合发产品页、广告文案、邮件和社媒内容。",
+      "icon": "🌍",
+      "plugin_ids": [
+        "clawhub-humanizer",
+        "skill-conorbronsdon-avoid-ai-writing-avoid-ai-writing",
+        "skill-blacktwist-social-media-skills-content-repurposer-sms",
+        "skill-aaron-he-zhu-seo-geo-claude-skills-seo-content-writer"
+      ],
+      "sort": 20,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "cross-border-search-growth",
+      "group": "外贸/跨境",
+      "pain": "海外没曝光",
+      "title": "海外没曝光？先把内容和关键词做对",
+      "summary": "帮你找国外用户常搜什么、看竞品怎么写，再把内容和页面优化到更容易被搜索到，适合做跨境获客和多语言站点。",
+      "icon": "📈",
+      "plugin_ids": [
+        "skill-aaron-he-zhu-seo-geo-claude-skills-keyword-research",
+        "skill-aaron-he-zhu-seo-geo-claude-skills-competitor-analysis",
+        "skill-zubair-trabzada-geo-seo-claude-geo-content",
+        "skill-aaron-he-zhu-seo-geo-claude-skills-meta-tags-optimizer"
+      ],
+      "sort": 21,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "office-doc-summary",
+      "group": "职场知识工作者",
+      "pain": "材料看不完",
+      "title": "材料看不完？一包帮你读完写完",
+      "summary": "把PDF、Word、会议录音和网页内容一起处理，帮你快速提炼重点、整理成纪要，再顺手改成能交差的文档。",
+      "icon": "📄",
+      "plugin_ids": [
+        "skill-anthropics-skills-pdf",
+        "clawhub-word-docx",
+        "clawhub-openai-whisper",
+        "clawhub-notion"
+      ],
+      "sort": 22,
+      "status": "draft",
+      "is_visible": false
+    },
+    {
+      "bundle_id": "ppt-excel-meeting-kit",
+      "group": "职场知识工作者",
+      "pain": "汇报做太慢",
+      "title": "汇报做太慢？这包直接提速",
+      "summary": "把表格数据、会议内容和文字材料串起来，帮你做汇总、出PPT、整理重点，少熬夜赶汇报。",
+      "icon": "📊",
+      "plugin_ids": [
+        "clawhub-excel-xlsx",
+        "skill-thinkinaixyz-deepchat-pptx",
+        "skill-francyjglisboa-agent-skill-creator-weekly-crm-report",
+        "skill-joeseesun-qiaomu-anything-to-notebooklm-qiaomu-anything-to"
+      ],
+      "sort": 23,
+      "status": "draft",
+      "is_visible": false
+    }
+  ]
+}
