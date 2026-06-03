@@ -41,10 +41,60 @@ def op_save(packet):
         return {"error": str(e)}
 
 
+def _s(v):
+    if isinstance(v, list):
+        return "\n".join(f"• {str(x).strip()}" for x in v if str(x).strip())
+    return str(v or "").strip()
+
+
+def ai_clawhub(p):
+    """clawhub 技能无 SKILL.md,只能基于已有简介客观扩写四段(明确不编造)。"""
+    name = p.get("display_name_en") or p.get("display_name_zh") or ""
+    summ = p.get("summary_zh") or ""
+    cat = p.get("category") or ""
+    tags = "、".join(p.get("tags") or [])
+    return gi._chat(
+        "你是严谨的技术工具编辑。下面是 ClawHub(OpenClaw 技能市场)上一个技能的【已有列表信息】"
+        "(没有源码/SKILL.md,只有简介)。请只依据这些信息客观推断,**不要编造不存在的具体功能或参数**,"
+        "拿不准的就笼统说。陈述句、客观、禁营销腔。输出严格 JSON："
+        "core_usage(核心用法,2-3句), triggers(触发场景,用『、』分隔), "
+        "pros_cons(优劣特点:亮点 + 注明'信息来自ClawHub列表、未核验源码'这一前提), "
+        "audience(适用人群)。只输出 JSON。\n"
+        f"技能名:{name}\n简介:{summ}\n分类:{cat}\n标签:{tags}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=0, help="只处理前 N 个(0=全部)")
+    ap.add_argument("--clawhub", action="store_true", help="回填 clawhub 技能(基于已有简介扩写,非源码)")
     args = ap.parse_args()
+
+    if args.clawhub:
+        items = op_list()
+        todo = [p for p in items if p.get("source") == "clawhub" and not (p.get("usage_detail") or {}).get("core_usage")]
+        if args.limit:
+            todo = todo[:args.limit]
+        print(f"[backfill-clawhub] 待回填 {len(todo)} 个")
+        ok = fail = 0
+        for i, p in enumerate(todo, 1):
+            ai = ai_clawhub(p)
+            if not ai or not ai.get("core_usage"):
+                print(f"  [{i}/{len(todo)}] {p['plugin_id']} AI失败,跳过"); fail += 1; continue
+            ip = p.get("install_payload") or {}
+            upd = dict(p)
+            upd["usage_detail"] = {
+                "core_usage": _s(ai.get("core_usage")), "triggers": _s(ai.get("triggers")),
+                "pros_cons": _s(ai.get("pros_cons")), "audience": _s(ai.get("audience")),
+                "install_official": (ip.get("command") or "").strip(),
+            }
+            r = op_save(upd)
+            if r.get("error"):
+                print(f"  [{i}/{len(todo)}] {p['plugin_id']} 回存失败"); fail += 1
+            else:
+                print(f"  [{i}/{len(todo)}] ✅ {p.get('display_name_zh')}"); ok += 1
+            time.sleep(0.3)
+        print(f"\n[backfill-clawhub] 完成:{ok} | 失败 {fail}")
+        return
 
     def needs_fix(p):
         ud = p.get("usage_detail") or {}
@@ -87,10 +137,6 @@ def main():
         upd["summary_zh"] = ai.get("summary") or p.get("summary_zh") or ""
         upd["category"] = cat
         upd["version"] = p.get("version") or gi.fetch_version(owner, repo)
-        def _s(v):
-            if isinstance(v, list):
-                return "\n".join(f"• {str(x).strip()}" for x in v if str(x).strip())
-            return str(v or "").strip()
         upd["usage_detail"] = {
             "core_usage": _s(ai.get("core_usage")),
             "triggers": _s(ai.get("triggers")),
