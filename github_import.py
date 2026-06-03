@@ -442,18 +442,14 @@ def route_repo(owner_repo, cand=None, apply=False, publish=False, visible=False,
             return "card-collection"
         if len(skills) > SKILL_MAX:
             print(f"  ⚠️ 含 {len(skills)} 个 skill(>{SKILL_MAX})，--max-skills={max_skills} 放行，逐个入插件")
-        if license_ok(spdx) or allow_any:
-            warn = "" if license_ok(spdx) else (spdx or "NO-LICENSE")
-            if warn:
-                print(f"  ⚠️ license「{spdx}」不合规，--allow-any-license 强制收录并标警告")
-            print(f"  → 出口①插件中心({len(skills)} 个 skill)")
-            for sd, dn, files in skills:
-                save_skill(owner, repo, meta, sd, dn, files, apply, publish, no_ai, warn)
-            return "plugin"
-        else:
-            print(f"  ⏭️ 是 skill 但 license「{spdx}」不可再分发 → 跳过"
-                  f"(不进插件中心，也不混进项目热门；可转公域引流选题)")
-            return "skip-license"
+        # license 门已放宽：非白名单不再跳过，改为收录 + 打警告标签(审核时可剔除)
+        warn = "" if license_ok(spdx) else (spdx or "NO-LICENSE")
+        if warn:
+            print(f"  ⚠️ license「{spdx}」非白名单 → 仍收录并标警告(审核时可剔)")
+        print(f"  → 出口①插件中心({len(skills)} 个 skill)")
+        for sd, dn, files in skills:
+            save_skill(owner, repo, meta, sd, dn, files, apply, publish, no_ai, warn)
+        return "plugin"
     else:
         print("  → 出口②内容中心(普通项目，做大白话引流卡)")
         save_card(owner, repo, meta, cand or {}, apply, visible, no_ai)
