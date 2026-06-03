@@ -25,7 +25,6 @@
       "summary": "把销量、转化、竞品和搜索情况一起梳理清楚，让你知道该推什么、改什么、停什么。",
       "icon": "📊",
       "plugin_ids": [
-        "clawhub-stock-analysis",
         "skill-aaron-he-zhu-seo-geo-claude-skills-competitor-analysis",
         "skill-blacktwist-social-media-skills-performance-analyzer-sms",
         "clawhub-excel-xlsx"
