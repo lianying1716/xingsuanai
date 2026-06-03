@@ -12,6 +12,7 @@ ClawHub(OpenClaw 的 skill 市场)技能不是 git 仓，装法是 `clawhub inst
 """
 import argparse, json, os, re, sys, time, urllib.request, urllib.parse, urllib.error
 from pathlib import Path
+import dedup  # 共享去重模块
 
 ENV = Path(__file__).resolve().parent / ".env"
 CFG = {}
@@ -51,16 +52,45 @@ def op(path, data=None, method=None):
     except urllib.error.HTTPError as e: return e.code, {}
 
 
+def client_get(path):
+    try:
+        with urllib.request.urlopen(urllib.request.Request(OPB + path, headers={"User-Agent": "x"}), timeout=30) as r:
+            return json.loads(r.read())
+    except Exception:
+        return {}
+
+
+def gh_url_of(it):
+    """从 clawhub 条目里尽量找出其背后的 GitHub 仓地址(字段不固定,逐个试)。"""
+    for k in ("repository", "repoUrl", "repo", "githubUrl", "github", "source", "sourceUrl", "homepage", "url"):
+        v = it.get(k)
+        if isinstance(v, dict):
+            v = v.get("url") or v.get("html_url") or ""
+        if v and "github.com" in str(v):
+            return str(v)
+    return ""
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--limit", type=int, default=50)
     ap.add_argument("--apply", action="store_true"); args = ap.parse_args()
     url = "https://clawhub.ai/api/v1/skills?" + urllib.parse.urlencode({"sort": "downloads", "limit": args.limit})
     items = json.load(urllib.request.urlopen(url, timeout=30)).get("items", [])[:args.limit]
     print(f"[clawhub] 拉到 {len(items)} 个 Top 技能")
-    done = 0
+    idx = dedup.build_live_index(client_get)
+    print(f"[dedup] 线上索引:{len(idx['repos'])} 个仓 / {len(idx['ids'])} 个ID")
+    done = skipped = 0
     for it in items:
         slug = it.get("slug");
         if not slug: continue
+        pid = ("clawhub-" + re.sub(r"[^a-z0-9]+", "-", slug.lower()).strip("-"))[:64]
+        # 跨源去重①:该技能背后的 GitHub 仓若已被我们收录 → 跳过(避免 GitHub 版+ClawHub 版重复)
+        ghu = gh_url_of(it)
+        if ghu and dedup.repo_exists(idx, ghu):
+            print(f"  ⏭️ {slug} 跨源重复(已有GitHub版 {dedup.canon_repo(ghu)}),跳过"); skipped += 1; continue
+        # 跨源去重②:同 plugin_id 已存在 → 跳过(省 AI 加工;upsert 本也幂等)
+        if pid in idx["ids"]:
+            print(f"  ⏭️ {slug} 已收录({pid}),跳过"); skipped += 1; continue
         name = it.get("displayName") or slug; summ = (it.get("summary") or "")[:400]
         dl = (it.get("stats") or {}).get("downloads") or (it.get("stats") or {}).get("installs") or 0
         ai = chat("把这个 OpenClaw 技能用大白话中文介绍给小白，输出严格 JSON："

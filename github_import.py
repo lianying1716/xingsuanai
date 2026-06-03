@@ -36,7 +36,11 @@ import urllib.error
 from datetime import datetime, timezone
 from pathlib import Path
 
+import dedup  # 共享去重模块
+
 ENV_PATH = Path(__file__).resolve().parent / ".env"
+
+LIVE_IDX = None  # 运行前用 build_live_index 填充的线上指纹索引(跨源去重防线)
 
 
 def load_env():
@@ -125,6 +129,21 @@ def operator(path, data=None, method=None):
         return st, json.loads(body)
     except Exception:
         return st, {"_raw": body[:200]}
+
+
+def client_get(path):
+    """拉客户端公开接口(无需 token),供去重索引用。"""
+    st, body = _req(OP_BASE + path, {"User-Agent": "xsai-content-pipeline"})
+    try:
+        return json.loads(body) if st == 200 else {}
+    except Exception:
+        return {}
+
+
+def build_live_index():
+    global LIVE_IDX
+    LIVE_IDX = dedup.build_live_index(client_get)
+    print(f"[dedup] 线上索引:{len(LIVE_IDX['repos'])} 个仓 / {len(LIVE_IDX['ids'])} 个ID(跨源去重已就绪)")
 
 
 STATE_PATH = ENV_PATH.parent / ".github_state.json"
@@ -427,6 +446,10 @@ def refresh_cards():
 # ── 路由：一仓自动分流 ────────────────────────────────────────────────
 def route_repo(owner_repo, cand=None, apply=False, publish=False, visible=False, no_ai=False, allow_any=False, max_skills=SKILL_MAX, include_dot=False):
     owner, repo = owner_repo.split("/", 1)
+    # 跨源去重防线:该仓若已在客户端任意中心(插件/内容卡),直接跳过,绝不重复入库
+    if LIVE_IDX is not None and dedup.repo_exists(LIVE_IDX, owner_repo):
+        print(f"\n=== {owner_repo}  ⏭️ 已在客户端(跨源去重),跳过 ===")
+        return "exists"
     meta = fetch_meta(owner, repo)
     spdx = meta["license"]
     print(f"\n=== {owner_repo}  ⭐{meta['stars']}  license={spdx}  lang={meta.get('language')} ===")
@@ -495,6 +518,7 @@ def main():
                 repos.append(ln.split()[0])
         repos = list(dict.fromkeys(repos))
         print(f"[add-list] {len(repos)} 个仓待处理")
+        build_live_index()
         state = load_state()
         processed = state.setdefault("processed", {})
         new = 0
@@ -519,6 +543,7 @@ def main():
         return
 
     if args.add:
+        build_live_index()
         route_repo(args.add, apply=args.apply, publish=args.publish,
                    visible=args.visible, no_ai=args.no_ai, allow_any=args.allow_any_license, max_skills=args.max_skills, include_dot=args.include_dot)
         return
@@ -532,6 +557,7 @@ def main():
             print(f"  {dest:5} {c['repo']}  ⭐{c['stars']}(+{c['vel']}/天) fs={c['fs']} [{lic}] | {c['desc'][:50]}")
         if args.apply:
             print("\n=== 逐个加工并入库(自动分流，已处理过的跳过) ===")
+            build_live_index()
             state = load_state()
             processed = state.setdefault("processed", {})
             new_cnt = 0
