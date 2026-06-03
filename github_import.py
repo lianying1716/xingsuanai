@@ -252,7 +252,23 @@ def fetch_meta(owner, repo):
         "stars": d.get("stargazers_count", 0), "forks": d.get("forks_count", 0),
         "description": d.get("description"), "topics": d.get("topics", []),
         "license": (d.get("license") or {}).get("spdx_id"), "language": d.get("language"),
+        "pushed_at": d.get("pushed_at"),
     }
+
+
+def fetch_version(owner, repo):
+    """取最新 release/tag 作版本号；都没有则 'latest'。"""
+    for url in (f"https://api.github.com/repos/{owner}/{repo}/releases/latest",
+                f"https://api.github.com/repos/{owner}/{repo}/tags?per_page=1"):
+        try:
+            d = gh(url)
+            if isinstance(d, dict) and d.get("tag_name"):
+                return str(d["tag_name"])[:24]
+            if isinstance(d, list) and d and d[0].get("name"):
+                return str(d[0]["name"])[:24]
+        except Exception:
+            continue
+    return "latest"
 
 
 def fetch_contributors(owner, repo):
@@ -295,15 +311,28 @@ def find_skill_md(owner, repo, branch, include_dot=False):
 
 
 # ── 加工 ──────────────────────────────────────────────────────────────
-def ai_skill(skill_md):
+SKILL_CATS = ["AI编程", "开发效率", "搜索研究", "内容创作", "设计前端", "数据分析", "通讯协作", "其他"]
+
+
+def ai_skill(skill_md, readme=""):
     if not (RELAY_KEY and RELAY_MODEL):
         return None
     return _chat(
-        "你是给「AI 工具小白」写说明的编辑。下面是一个 Claude Code/Cursor/Codex 技能的 SKILL.md。\n"
-        "用最通俗的简体中文(英文缩写要解释)，输出严格 JSON：display_name_zh(8字内), "
-        "summary_zh(一句话干嘛的), description_zh(2-3句:能帮你做什么+适合谁), "
-        "usage_zh(装好后怎么用,1-2句), category(从[内容创作,开发工具,效率工具,设计,其他]选一)。只输出 JSON。\n"
-        f"---\n{skill_md[:5000]}\n---")
+        "你是严谨的技术工具编辑，为 AI 工具使用者客观介绍一个 Claude Code / Cursor / Codex 的技能(skill)。\n"
+        "【硬要求】只依据下面 SKILL.md / README 的事实，不得编造功能；用陈述句、客观专业；"
+        "禁止『帮你/轻松/一键搞定/赋能/强大/神器』这类营销腔；遇到英文缩写或术语，首次出现用括号一句话解释清楚。\n"
+        "输出严格 JSON(只输出 JSON，键如下)：\n"
+        "  display_name_zh: 中文译名，12字内，准确、不卖萌；\n"
+        "  summary: 一句客观定位——它是什么、解决什么问题，陈述句，30字内；\n"
+        "  core_usage: 核心用法，2-3句说清它怎么工作、产出什么；\n"
+        "  triggers: 触发场景——从 SKILL.md 的 'Use when' 或描述里提炼出『什么情况下会用到它』，列具体情形，用『、』分隔；\n"
+        "  pros_cons: 优劣特点，客观陈述：2-3个亮点 +（如有）1-2个局限或前提，例如需要 API Key（接口密钥）、只支持某工具、由个人开发者维护等；\n"
+        "  audience: 适用人群——按角色或场景说清谁该装它；\n"
+        "  install_official: 从 README/SKILL.md 里【明确写出的】安装或运行命令原样提取（可多行，换行分隔）；没有明确命令就返回空字符串，不要编造；\n"
+        f"  category: 从这些里选一个最贴切的，只填名字：{'/'.join(SKILL_CATS)}；\n"
+        "  tags: 0-4个关键词数组（小写英文或简短中文）。\n"
+        f"SKILL.md：\n---\n{(skill_md or '')[:4500]}\n---\n"
+        f"补充 README（可能为空）：\n---\n{(readme or '')[:2500]}\n---")
 
 
 def ai_card(name, desc, readme):
@@ -330,24 +359,40 @@ def ai_card(name, desc, readme):
 def save_skill(owner, repo, meta, skill_dir, dir_name, files, apply, publish, no_ai, license_warn):
     branch = meta["branch"]
     md = fetch_raw(owner, repo, branch, (skill_dir + "/SKILL.md") if skill_dir else "SKILL.md")
+    readme = fetch_raw(owner, repo, branch, (skill_dir + "/README.md") if skill_dir else "README.md")
     risky = scan_risky(md)
-    ai = None if no_ai else ai_skill(md)
+    ai = None if no_ai else ai_skill(md, readme)
     if not no_ai and not ai:
         raise RuntimeError(f"AI加工失败(skill {dir_name})，跳过不存空卡，下轮重试")
     pid = slugify_skill(f"{owner}-{repo}-{dir_name}")
-    summary = (ai or {}).get("summary_zh") or (meta.get("description") or repo)
+    # 英文主标题:dir_name 是通用名(skill/skills/src…)时回退用仓名,避免标题显示成"skill"
+    en_name = dir_name if dir_name and dir_name.lower() not in ("skill", "skills", "src", "main", ".", repo.lower()) else repo
+    summary = (ai or {}).get("summary") or (ai or {}).get("summary_zh") or (meta.get("description") or repo)
     if license_warn:
         summary = f"⚠️[{license_warn}] " + summary
-    tags = list(dict.fromkeys((meta.get("topics") or [])[:6] + [f"license:{meta.get('license') or 'NONE'}"]))
+    tags_ai = [str(t) for t in ((ai or {}).get("tags") or []) if t][:4]
+    tags = list(dict.fromkeys(tags_ai + (meta.get("topics") or [])[:4] + [f"license:{meta.get('license') or 'NONE'}"]))
     if license_warn:
         tags.append("待法务确认")
     if risky:
         tags.append("⚠️风险待审")
+    cat = (ai or {}).get("category")
+    cat = cat if cat in SKILL_CATS else "其他"
+    # 四段结构化说明 + 官方安装命令(仿 cocoloop 详细使用说明,客观专业)
+    usage_detail = {
+        "core_usage": (ai or {}).get("core_usage") or "",
+        "triggers": (ai or {}).get("triggers") or "",
+        "pros_cons": (ai or {}).get("pros_cons") or "",
+        "audience": (ai or {}).get("audience") or "",
+        "install_official": ((ai or {}).get("install_official") or "").strip(),
+    }
     packet = {
         "plugin_id": pid, "kind": "skill",
-        "display_name_zh": (ai or {}).get("display_name_zh") or dir_name, "display_name_en": dir_name,
-        "summary_zh": summary, "description_zh": (ai or {}).get("description_zh") or "",
-        "usage_zh": (ai or {}).get("usage_zh") or "", "category": (ai or {}).get("category") or "其他",
+        "display_name_zh": (ai or {}).get("display_name_zh") or en_name, "display_name_en": en_name,
+        "summary_zh": summary, "description_zh": (ai or {}).get("core_usage") or "",
+        "usage_zh": (ai or {}).get("core_usage") or "", "category": cat,
+        "usage_detail": usage_detail,
+        "version": fetch_version(owner, repo),
         "tags": tags, "source": "github",
         "source_url": f"https://github.com/{owner}/{repo}" + (f"/tree/{branch}/{skill_dir}" if skill_dir else ""),
         "upstream_id": f"{owner}/{repo}", "compatible_tools": ["claudecode", "codex"],
