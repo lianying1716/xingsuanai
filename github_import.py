@@ -379,11 +379,15 @@ def save_skill(owner, repo, meta, skill_dir, dir_name, files, apply, publish, no
     cat = (ai or {}).get("category")
     cat = cat if cat in SKILL_CATS else "其他"
     # 四段结构化说明 + 官方安装命令(仿 cocoloop 详细使用说明,客观专业)
+    def _s(v):
+        if isinstance(v, list):
+            return "\n".join(f"• {str(x).strip()}" for x in v if str(x).strip())
+        return str(v or "").strip()
     usage_detail = {
-        "core_usage": (ai or {}).get("core_usage") or "",
-        "triggers": (ai or {}).get("triggers") or "",
-        "pros_cons": (ai or {}).get("pros_cons") or "",
-        "audience": (ai or {}).get("audience") or "",
+        "core_usage": _s((ai or {}).get("core_usage")),
+        "triggers": _s((ai or {}).get("triggers")),
+        "pros_cons": _s((ai or {}).get("pros_cons")),
+        "audience": _s((ai or {}).get("audience")),
         "install_official": ((ai or {}).get("install_official") or "").strip(),
     }
     packet = {
