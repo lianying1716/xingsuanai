@@ -313,6 +313,8 @@ def save_skill(owner, repo, meta, skill_dir, dir_name, files, apply, publish, no
     md = fetch_raw(owner, repo, branch, (skill_dir + "/SKILL.md") if skill_dir else "SKILL.md")
     risky = scan_risky(md)
     ai = None if no_ai else ai_skill(md)
+    if not no_ai and not ai:
+        raise RuntimeError(f"AI加工失败(skill {dir_name})，跳过不存空卡，下轮重试")
     pid = slugify_skill(f"{owner}-{repo}-{dir_name}")
     summary = (ai or {}).get("summary_zh") or (meta.get("description") or repo)
     if license_warn:
@@ -352,6 +354,8 @@ def save_card(owner, repo, meta, cand, apply, visible, no_ai):
     branch = meta["branch"]
     readme = fetch_raw(owner, repo, branch, "README.md") or fetch_raw(owner, repo, branch, "README.en.md")
     ai = None if no_ai else ai_card(repo, meta.get("description") or "", readme)
+    if not no_ai and not ai:
+        raise RuntimeError(f"AI加工失败(card {owner}/{repo})，跳过不存空卡，下轮重试")
     title = (ai or {}).get("display_name_zh") or repo
     install_cmd = ((ai or {}).get("install_zh") or "").strip() or f"git clone https://github.com/{owner}/{repo}.git"
     cat = (ai or {}).get("category")

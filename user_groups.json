@@ -1,0 +1,30 @@
+{
+  "_说明": "星算用户群体 → GitHub/skill 挖掘配置。外部可直接编辑：增删群体、调关键词查询即可，group_mine.py 下次跑就用新配置，无需改代码。queries 是 GitHub Search 关键词(脚本会自动加 stars/活跃度过滤)；limit 是每个群体取多少个候选。",
+  "_产品锚点": "星算助手桌面端 = 一键装 Claude Code/Cursor/Codex + 汉化 + API中转 + 本地大模型 + 星绘工坊(AI绘图) + 插件中心。受众=想用AI工具但被付款/访问/英文/价格挡住的中国用户(开发者+创作者+创业者+企业)。",
+  "groups": [
+    { "name": "电商从业/创业", "desc": "选品、详情页、客服话术、营销图、店铺数据分析",
+      "queries": ["ecommerce ai agent skill", "product description generator ai", "shopify ai assistant"], "limit": 4 },
+    { "name": "自媒体/内容创业", "desc": "AI写作、配图、短视频、小红书/公众号、SEO/GEO内容",
+      "queries": ["content creation ai skill", "social media content generator", "ai video short generator"], "limit": 5 },
+    { "name": "自由职业/独立创业", "desc": "一人多角、用AI顶团队、自动化日常",
+      "queries": ["indie hacker ai tools", "solo founder automation agent", "personal ai assistant agent"], "limit": 4 },
+    { "name": "程序员/开发者", "desc": "Claude Code/Cursor/Codex 周边、代码审查、效率、MCP",
+      "queries": ["claude code skill", "developer productivity mcp server", "code review ai skill"], "limit": 5 },
+    { "name": "Vibe Coding", "desc": "用嘴写代码、自然语言建站/做App、低代码 agent",
+      "queries": ["vibe coding ai", "build app with natural language ai", "no code ai app builder"], "limit": 4 },
+    { "name": "企业智能化", "desc": "内部 agent、RAG知识库、流程自动化、智能客服",
+      "queries": ["enterprise ai agent", "rag knowledge base self-hosted", "workflow automation ai agent"], "limit": 5 },
+    { "name": "设计/创意", "desc": "AI绘图、UI/UX、设计系统、品牌、海报",
+      "queries": ["ai design skill claude", "ui ux design generator", "comfyui workflow"], "limit": 4 },
+    { "name": "学生/学术科研", "desc": "论文、文献检索、学习、笔记、PPT",
+      "queries": ["academic research skill claude", "paper literature ai assistant", "study notes ai"], "limit": 4 },
+    { "name": "运营/增长/市场", "desc": "SEO/GEO、广告、社媒排期、增长、竞品",
+      "queries": ["seo geo ai skill", "marketing automation agent", "social media scheduler ai"], "limit": 4 },
+    { "name": "个体户/小微企业主", "desc": "用AI替代雇人:文案、客服、记账、海报、收银",
+      "queries": ["small business ai assistant", "invoice bookkeeping ai", "ai customer service bot"], "limit": 3 },
+    { "name": "外贸/跨境", "desc": "翻译、多语、跨境营销、本地化",
+      "queries": ["translation ai agent", "cross-border ecommerce ai", "localization i18n ai tool"], "limit": 3 },
+    { "name": "职场知识工作者", "desc": "办公提效、PDF/PPT/Excel、会议纪要、总结",
+      "queries": ["office productivity ai skill", "pdf pptx docx ai", "meeting notes summarize ai"], "limit": 4 }
+  ]
+}
