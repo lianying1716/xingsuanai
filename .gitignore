@@ -14,3 +14,6 @@ build/
 
 # 运行时候选清单(数据,不提交)
 candidates_*.txt
+
+# 发布运行时临时包
+.packet_*.json

@@ -57,6 +57,15 @@
   },
 
   "platforms": {
+    "站内": {
+      "promo_feasibility": "high_自家站点",
+      "cta_policy": "自家站点(xsai5.xyz),CTA/链接/渠道码随便放;主要守全平台铁律+广告法",
+      "risk_keywords": [],
+      "redlines": ["仅全平台铁律:翻墙/VPN/外卡(只能'不用外卡')/官方/绝对化词"],
+      "ai_label_required": false,
+      "prefers": "SEO友好(标题/FAQ结构化)、大白话受众定律、真实产品事实+截图、获得感、清晰CTA+渠道码",
+      "sources": ["自家站点,无平台导流限制;遵广告法+政策线"]
+    },
     "小红书": {
       "promo_feasibility": "low_软露出only",
       "cta_policy": "禁一切外部联系方式/链接/二维码/'私信领'及变体(薇/v/卫星/QQ);仅'极干货+自然露出品牌词,让用户自己搜'",
